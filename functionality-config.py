@@ -1,9 +1,7 @@
 import yfinance as yf
 import pandas as pd
-import sqlite3 as sql
+import psycopg2 as dbEditor
 from datetime import datetime, timedelta
-
-connection = sql.connect('./Portfolio-Database.db')
 
 def ticker_lookup():
     ticker = input("Enter the Ticker of the stock you would like to look up\n")
