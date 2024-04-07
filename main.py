@@ -79,7 +79,7 @@ def main(page: Page) -> None:
         buy(ticker, shares)
         portfolio_update()
         time.sleep(5)
-        pie_Chart = make_pie_chart()
+        pie_chart = make_pie_chart()
         page.update()
 
     def on_sell(e):
@@ -124,8 +124,10 @@ def main(page: Page) -> None:
 
     investments = retrieve_values()
     investment_worth = 0
-    for investment in investments:
-        investment_worth = investment_worth + investment[2]
+    incrementor = 0
+    while incrementor < len(investments):
+        investment_worth = investment_worth + investments[incrementor][2]
+        incrementor = incrementor + 1
     portfolio_value_display = Text(value=f"Value: ${investment_worth}", color='white', theme_style=TextThemeStyle.HEADLINE_SMALL, font_family='Aptos Black')
     
 
