@@ -15,48 +15,48 @@ connection_details = dbEditor.connect(
 )
 cursor = connection_details.cursor()
 
-def ticker_lookup():
-    ticker = input("Enter the ticker of the stock you would like to look up\n")
+def ticker_lookup(tickerr):
+    ticker = tickerr
     end_date = datetime.today()
     start_date = end_date - timedelta(days=7)
 
     data = yf.download(ticker, start_date, end_date)
     close_prices_df= pd.DataFrame(data['Close'])
-    close_price = float(close_prices_df.iat[0,0])
+    close_price = round(float(close_prices_df.iat[0,0]), 2)
 
     return close_price
 
-def continuous_portfolio_update():
-    while True:
-        sql = 'SELECT ticker FROM "Portfolio"'
-        cursor.execute(sql)
-        ticker_tuple = cursor.fetchall()
+def portfolio_update():
+    sql = 'SELECT ticker FROM "Portfolio"'
+    cursor.execute(sql)
+    ticker_tuple = cursor.fetchall()
 
-        sql2 = 'SELECT shares_owned FROM "Portfolio"'
-        cursor.execute(sql2)
-        shares_owned_tuple = cursor.fetchall()
+    sql2 = 'SELECT shares_owned FROM "Portfolio"'
+    cursor.execute(sql2)
+    shares_owned_tuple = cursor.fetchall()
 
-        for x in ticker_tuple:
-            end_date = datetime.today()
-            start_date = end_date - timedelta(days=1)
-            data = yf.download(x[0],start_date, end_date)
-            close_price_df = pd.DataFrame(data['Close'])
-            close_price = float(close_price_df.iat[0, 0])
+    for x in ticker_tuple:
+        end_date = datetime.today()
+        start_date = end_date - timedelta(days=1)
+        data = yf.download(x[0],start_date, end_date)
+        close_price_df = pd.DataFrame(data['Close'])
+        close_price = float(close_price_df.iat[0, 0])
 
-            index = int(ticker_tuple.index(x))
+        index = int(ticker_tuple.index(x))
 
-            sql3 = f'UPDATE "Portfolio"' + f" SET investment_value='{int(float(close_price)*float(shares_owned_tuple[index][0]))}'" + f"WHERE ticker='{x[0]}'"
-            cursor.execute(sql3)
-            connection_details.commit()
+        sql3 = f'UPDATE "Portfolio"' + f" SET investment_value='{int(float(close_price)*float(shares_owned_tuple[index][0]))}'" + f"WHERE ticker='{x[0]}'"
+        cursor.execute(sql3)
+        connection_details.commit()
 
-        time.sleep(5)
+def retrieve_values():
+    sql = 'SELECT ticker, shares_owned, investment_value FROM "Portfolio"'
+    cursor.execute(sql)
+    result = cursor.fetchall()
 
-def buy(tickerr):
+    return result
+
+def buy(ticker, shares_bought):
     global initial_investment_id
-    
-    ticker = tickerr
-
-    shares_bought = input("How many shares would you like to buy?\n")
 
     end_date = datetime.today()
     start_date = end_date - timedelta(days=1)
@@ -82,13 +82,8 @@ def buy(tickerr):
 
     cursor.execute(table_modification)
     connection_details.commit()
-    cursor.close()
 
-def sell(tickerr, shares_soldd):
-    ticker = tickerr
-    
-    shares_sold = shares_soldd
-
+def sell(ticker, shares_sold):
     sql = f'SELECT shares_owned FROM "Portfolio"' + f" WHERE ticker='{ticker}'"
     cursor.execute(sql)
     result = cursor.fetchall()
@@ -96,10 +91,3 @@ def sell(tickerr, shares_soldd):
     sql2 = f'UPDATE "Portfolio"' + f" SET shares_owned={result[0][0]-shares_sold}" + f" WHERE ticker='{ticker}'"
     cursor.execute(sql2)
     connection_details.commit()
-    cursor.close()
-
-"""
-    Code I might need later:
-
-    investment_value={float(result[2])+float(money_spent)}
-"""
