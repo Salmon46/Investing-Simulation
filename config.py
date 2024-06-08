@@ -6,7 +6,7 @@ import time
 
 initial_investment_id = 1
 
-connection_details = dbEditor.connect(
+connection_details = dbEditor.connect( #IMPORTANT!!!: This database connection is unaccurate since it has been detached from the project. 
     host="ceu9lmqblp8t3q.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com",
     database="d2o7fsji8voktj",
     user="u9ssoi3qi31nm8", 

@@ -1,3 +1,5 @@
+#IMPORTANT!!!: This project no longer works because the database has been detached. 
+
 from flet import *
 from config import *
 import plotly.graph_objects as go
